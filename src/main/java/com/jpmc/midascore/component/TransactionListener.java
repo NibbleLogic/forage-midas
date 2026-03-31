@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionListener {
 
-    @KafkaListener(topics = "${general.kafka-topic}")
+    @KafkaListener(topics = "${general.kafka-topic:midas-transactions}")
     public void listen(Transaction transaction) {
         System.out.println("Received transaction: " + transaction);
     }
