@@ -1,5 +1,6 @@
 general:
   kafka-topic: "midas-transactions"
+  incentive-api-url: "http://localhost:33433/incentive"
 
 spring:
   datasource:

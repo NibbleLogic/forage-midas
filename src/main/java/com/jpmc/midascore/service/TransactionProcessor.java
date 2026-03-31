@@ -12,10 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransactionProcessor {
     private final UserRepository userRepository;
     private final TransactionRecordRepository transactionRecordRepository;
+    private final IncentiveClient incentiveClient;
 
-    public TransactionProcessor(UserRepository userRepository, TransactionRecordRepository transactionRecordRepository) {
+    public TransactionProcessor(
+            UserRepository userRepository,
+            TransactionRecordRepository transactionRecordRepository,
+            IncentiveClient incentiveClient
+    ) {
         this.userRepository = userRepository;
         this.transactionRecordRepository = transactionRecordRepository;
+        this.incentiveClient = incentiveClient;
     }
 
     @Transactional
@@ -43,11 +49,13 @@ public class TransactionProcessor {
             return;
         }
 
+        float incentive = incentiveClient.fetchIncentiveAmount(transaction);
+
         sender.setBalance(sender.getBalance() - amount);
-        recipient.setBalance(recipient.getBalance() + amount);
+        recipient.setBalance(recipient.getBalance() + amount + incentive);
 
         // Persist record; user balance changes will flush on commit.
-        transactionRecordRepository.save(new TransactionRecord(sender, recipient, amount));
+        transactionRecordRepository.save(new TransactionRecord(sender, recipient, amount, incentive));
     }
 }
 
